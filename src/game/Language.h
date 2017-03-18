@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  * Copyright (C) 2009-2011 MaNGOSZero <https://github.com/mangos/zero>
+ * Copyright (C) 2011-2016 Nostalrius <https://nostalrius.org>
+ * Copyright (C) 2016-2017 Elysium Project <https://github.com/elysium-project>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -559,6 +561,8 @@ enum MangosStrings
     LANG_PINFO_ACCOUNT                  = 616,
     LANG_PINFO_LEVEL                    = 549,
     LANG_PINFO_NO_REP                   = 550,
+
+    LANG_GROUP_INFO                     = 640,
 
     LANG_YOU_SET_EXPLORE_ALL            = 551,
     LANG_YOU_SET_EXPLORE_NOTHING        = 552,

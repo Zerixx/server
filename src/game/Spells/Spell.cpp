@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  * Copyright (C) 2009-2011 MaNGOSZero <https://github.com/mangos/zero>
+ * Copyright (C) 2011-2016 Nostalrius <https://nostalrius.org>
+ * Copyright (C) 2016-2017 Elysium Project <https://github.com/elysium-project>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -4689,8 +4691,14 @@ SpellCastResult Spell::CheckCast(bool strict)
             {
                 Player* casterOwner = m_caster->GetCharmerOrOwnerPlayerOrPlayerItself();
                 Player* targetOwner = target->GetCharmerOrOwnerPlayerOrPlayerItself();
-                if (targetOwner && casterOwner != targetOwner && targetOwner->duel && casterOwner && !casterOwner->IsInDuelWith(targetOwner))
-                    return SPELL_FAILED_BAD_TARGETS;
+
+                if (m_spellInfo->Id == 7266 && targetOwner->duel && !casterOwner->IsInDuelWith(targetOwner))
+                {
+                    return SPELL_FAILED_TARGET_DUELING;
+                }
+
+                if (targetOwner && casterOwner != targetOwner && targetOwner->duel && targetOwner->duel->startTime && casterOwner && !casterOwner->IsInDuelWith(targetOwner))
+                    return SPELL_FAILED_TARGET_DUELING;
             }
         }
         else if (m_caster == target)

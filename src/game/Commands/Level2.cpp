@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  * Copyright (C) 2009-2011 MaNGOSZero <https://github.com/mangos/zero>
+ * Copyright (C) 2011-2016 Nostalrius <https://nostalrius.org>
+ * Copyright (C) 2016-2017 Elysium Project <https://github.com/elysium-project>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2473,6 +2475,56 @@ bool ChatHandler::HandleKickPlayerCommand(char *args)
         target->GetSession()->KickPlayer();
     else
         target->GetSession()->KickDisconnectedFromWorld();
+    return true;
+}
+
+bool ChatHandler::HandleGroupInfoCommand(char* args)
+{
+    Player* target;
+    ObjectGuid target_guid;
+    std::string target_name;
+    if (!ExtractPlayerTarget(&args, &target, &target_guid, &target_name))
+        return false;
+
+    if (!target)
+    {
+        PSendSysMessage(LANG_NO_CHAR_SELECTED);
+        return false;
+    }
+
+    auto group = target->GetGroup();
+
+    if (!group)
+    {
+        PSendSysMessage(LANG_NOT_IN_GROUP);
+        return false;
+    }
+
+    std::vector<std::string> names;
+
+    for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
+    {
+        if (Player* player = itr->getSource())
+        {
+            names.emplace_back(player->GetName());
+        }
+    }
+
+    std::stringstream stream;
+
+    for (std::size_t i = 0, j = names.size(); i != j; ++i)
+    {
+        stream << names[i];
+		
+        if (i + 1 != j)
+        {
+            stream << ", ";
+        }
+    }
+
+    PSendSysMessage(LANG_GROUP_INFO, (group->isRaidGroup() ? "Raid" : "Party"),
+                    playerLink(std::to_string(group->GetId())).c_str(), playerLink(group->GetLeaderName()).c_str(),
+                    playerLink("Test").c_str(), group->GetMembersCount(), stream.str().c_str());
     return true;
 }
 

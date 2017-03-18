@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  * Copyright (C) 2009-2011 MaNGOSZero <https://github.com/mangos/zero>
+ * Copyright (C) 2011-2016 Nostalrius <https://nostalrius.org>
+ * Copyright (C) 2016-2017 Elysium Project <https://github.com/elysium-project>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -4488,18 +4490,14 @@ bool ChatHandler::HandleServerIdleShutDownCommand(char* args)
 
 bool ChatHandler::HandleQuestAddCommand(char* args)
 {
-    Player* player = getSelectedPlayer();
-    if (!player)
-    {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
     // .addquest #entry'
     // number or [name] Shift-click form |color|Hquest:quest_id:quest_level|h[name]|h|r
     uint32 entry;
     if (!ExtractUint32KeyFromLink(&args, "Hquest", entry))
+        return false;
+
+    Player* player;
+    if (!ExtractPlayerTarget(&args, &player, NULL, NULL))
         return false;
 
     Quest const* pQuest = sObjectMgr.GetQuestTemplate(entry);
@@ -4534,23 +4532,20 @@ bool ChatHandler::HandleQuestAddCommand(char* args)
             player->CompleteQuest(entry);
     }
 
+    PSendSysMessage("Quest %u added for %s.", entry, player->GetName());
     return true;
 }
 
 bool ChatHandler::HandleQuestRemoveCommand(char* args)
 {
-    Player* player = getSelectedPlayer();
-    if (!player)
-    {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
     // .removequest #entry'
     // number or [name] Shift-click form |color|Hquest:quest_id:quest_level|h[name]|h|r
     uint32 entry;
     if (!ExtractUint32KeyFromLink(&args, "Hquest", entry))
+        return false;
+
+    Player* player;
+    if (!ExtractPlayerTarget(&args, &player, NULL, NULL))
         return false;
 
     Quest const* pQuest = sObjectMgr.GetQuestTemplate(entry);
@@ -4587,20 +4582,16 @@ bool ChatHandler::HandleQuestRemoveCommand(char* args)
 
 bool ChatHandler::HandleQuestStatusCommand(char* args)
 {
-    Player* player = getSelectedPlayer();
-    if (!player)
-    {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
     // .quest complete #entry
     // number or [name] Shift-click form |color|Hquest:quest_id:quest_level|h[name]|h|r
     uint32 entry;
     if (!ExtractUint32KeyFromLink(&args, "Hquest", entry))
         return false;
-    
+
+    Player* player;
+    if (!ExtractPlayerTarget(&args, &player, NULL, NULL))
+        return false;
+
     Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
 
     // If player doesn't have the quest
@@ -4640,18 +4631,14 @@ bool ChatHandler::HandleQuestStatusCommand(char* args)
 
 bool ChatHandler::HandleQuestCompleteCommand(char* args)
 {
-    Player* player = getSelectedPlayer();
-    if (!player)
-    {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
     // .quest complete #entry
     // number or [name] Shift-click form |color|Hquest:quest_id:quest_level|h[name]|h|r
     uint32 entry;
     if (!ExtractUint32KeyFromLink(&args, "Hquest", entry))
+        return false;
+
+    Player* player;
+    if (!ExtractPlayerTarget(&args, &player, NULL, NULL))
         return false;
 
     Quest const* pQuest = sObjectMgr.GetQuestTemplate(entry);
@@ -4664,6 +4651,8 @@ bool ChatHandler::HandleQuestCompleteCommand(char* args)
         return false;
     }
     player->FullQuestComplete(entry);
+
+    PSendSysMessage("Quest %u completed for %s.", entry, player->GetName());
     return true;
 }
 
